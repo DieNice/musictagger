@@ -1,7 +1,0 @@
-TODO
-
-[DONE] add support for writing files
-add support for more file formats (ogg, flac,...)
-add support for more tags (year, comment, ....)
-
-add support for different options in writing (like using 01 instead of 1)
