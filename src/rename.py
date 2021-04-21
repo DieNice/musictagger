@@ -71,13 +71,13 @@ class TagDictBuilder:
             if match in TagDictBuilder.ITEMS:
                 currentMatch = match
             else:
-                print line
-                print "eat: " + match
+                print(line)
+                print("eat: " + match)
                 eaten = self._eat(line, match)
                 line = eaten[1]
                 if currentMatch != "":
-                    print currentMatch
-                    print eaten
+                    print(currentMatch)
+                    print(eaten)
                     result[TAGDICT[currentMatch]] = eaten[0].strip()
             filtered = filtered[1:]
         return TagDict(result)
@@ -133,16 +133,16 @@ class FileWriter:
     def _translateSchema(self, file):
         location = self.schema
         for tag in TAGDICT:
-            print tag
-            print TAGDICT[tag]
-            print file.getTag(TAGDICT[tag])
+            print(tag)
+            print(TAGDICT[tag])
+            print(file.getTag(TAGDICT[tag]))
             location = location.replace(tag, file.getTag(TAGDICT[tag]))
         return location
             
 class FileHandler:
     def copy(self, src, dst, overwrite):
         if overwrite == False and self._exists(dst):
-            print dst + ": exists"
+            print(dst + ": exists")
         self.ensure_dir(dst)
         shutil.copy2(src,dst)
     
