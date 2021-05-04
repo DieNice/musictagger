@@ -1,12 +1,7 @@
-#!/bin/python
-# -*- coding: utf-8 -*-
-
 from mutagen.mp3 import MP3
 from mutagen.easyid3 import EasyID3
-
 from mutagen.flac import FLAC
 from mutagen.id3 import ID3, TIT2, TPE1, TALB, TRCK, TPOS
-
 import mutagen.id3
 
 #FIXME add year, disc, comment,..
@@ -66,23 +61,26 @@ class TagFile:
         self.file.save()
 
         
-class MyMp3(TagFile):    
-    writeDict = {ARTIST:TPE1, ALBUM:TALB, TRACK:TRCK, TITLE:TIT2, DISC:TPOS}
-    readDict = {ARTIST:"TPE1", ALBUM:"TALB", TRACK:"TRCK", TITLE:"TIT2", DISC:"TPOS"}
-    
-    def __init__(self, fname):
+class MyMp3(TagFile):
+    '''Class meta mp3 file contains tags'''
+    writeDict = {ARTIST: TPE1, ALBUM: TALB, TRACK: TRCK, TITLE: TIT2, DISC: TPOS}
+    readDict = {ARTIST: "TPE1", ALBUM: "TALB", TRACK: "TRCK", TITLE: "TIT2", DISC: "TPOS"}
+
+    def __init__(self, fname: str) -> None:
         self.extension = "mp3"
         self.fname = fname
         self.file = ID3(fname)
-        
-    def _read(self, tag):
+
+    def _read(self, tag: str) -> str:
+        ''':return tag from mp3 file'''
         try:
             return self.file.get(MyMp3.readDict[tag]).text[0]
         except AttributeError:
             return ""
-            
-    def _write(self, tag, value):
-        self.file.add(MyMp3.writeDict[tag](encoding=0, text=unicode(value)))
+
+    def _write(self, tag: str, value: str) -> None:
+        '''add tag to mp3 file'''
+        self.file.add(MyMp3.writeDict[tag](encoding=0, text=value))
         
         
 class MyFlac(TagFile):
