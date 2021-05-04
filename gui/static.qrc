@@ -1,0 +1,8 @@
+<RCC>
+  <qresource prefix="main_ico">
+    <file>main_ico.ico</file>
+  </qresource>
+  <qresource prefix="pictures">
+    <file>empty_logo.jpg</file>
+  </qresource>
+</RCC>
