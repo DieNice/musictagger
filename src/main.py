@@ -27,6 +27,7 @@ class MainApp(QtWidgets.QMainWindow, design.Ui_MainWindow):
         self.tableWidget.cellClicked.connect(self.select_row)
         self.addButton.clicked.connect(self.load_file_mp3)
         self.deleteButton.clicked.connect(self.delete_selected_rows)
+        self.pathButton.clicked.connect(self.load_path_directory_to_save)
         self.__center()
         self.__setAligmentTableColumns()
 
@@ -59,6 +60,13 @@ class MainApp(QtWidgets.QMainWindow, design.Ui_MainWindow):
         urls = QFileDialog.getOpenFileUrl(self, 'Open mp3 file', filter='*.mp3')
         return self.load_urls_to_table([urls[0]])
 
+    def load_path_directory_to_save(self):
+        path = QFileDialog.getExistingDirectory(None, "Choose folder for saving music", '.')
+        return self.load_path(path)
+
+    def load_path(self, path):
+        self.pathLine.setText(path)
+
     def load_picto(self, url):
         '''load picture from data mp3 to label or set default image'''
         tags = ID3(url)
@@ -74,32 +82,35 @@ class MainApp(QtWidgets.QMainWindow, design.Ui_MainWindow):
 
     def load_urls_to_table(self, urls: List[QUrl]):
         table = self.tableWidget
-        for item in urls:
-            mp3 = readFile(item.path())
-            row = table.rowCount()
-            table.setRowCount(row + 1)
-            mp3 = readFile(item.path())
-            name = QTableWidgetItem(str(item.fileName()))
-            table.setItem(row, 0, name)
+        try:
+            for item in urls:
+                mp3 = readFile(item.path())
+                row = table.rowCount()
+                table.setRowCount(row + 1)
+                mp3 = readFile(item.path())
+                name = QTableWidgetItem(str(item.fileName()))
+                table.setItem(row, 0, name)
 
-            title = QTableWidgetItem(str(mp3.title()))
-            table.setItem(row, 1, title)
+                title = QTableWidgetItem(str(mp3.title()))
+                table.setItem(row, 1, title)
 
-            artist = QTableWidgetItem(str(mp3.artist()))
-            table.setItem(row, 2, artist)
+                artist = QTableWidgetItem(str(mp3.artist()))
+                table.setItem(row, 2, artist)
 
-            album = QTableWidgetItem(str(mp3.album()))
-            table.setItem(row, 3, album)
+                album = QTableWidgetItem(str(mp3.album()))
+                table.setItem(row, 3, album)
 
-            disc = QTableWidgetItem(str(mp3.disc()))
-            table.setItem(row, 4, disc)
+                disc = QTableWidgetItem(str(mp3.disc()))
+                table.setItem(row, 4, disc)
 
-            track = QTableWidgetItem(str(mp3.track()))
-            table.setItem(row, 5, track)
+                track = QTableWidgetItem(str(mp3.track()))
+                table.setItem(row, 5, track)
 
-            filepath = QTableWidgetItem(str(item.path()))
-            table.setItem(row, 6, filepath)
-            self.tableWidget.resizeColumnsToContents()
+                filepath = QTableWidgetItem(str(item.path()))
+                table.setItem(row, 6, filepath)
+                self.tableWidget.resizeColumnsToContents()
+        except Exception:
+            pass
 
     def select_row(self):
         index = self.tableWidget.selectedIndexes()[-1].row()
