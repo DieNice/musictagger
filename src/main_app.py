@@ -36,10 +36,30 @@ class MainApp(QtWidgets.QMainWindow, design.Ui_MainWindow):
         self.deleteButton.clicked.connect(self.__delete_selected_rows)
         self.pathButton.clicked.connect(self.__load_path_directory_to_save)
         self.processButton.clicked.connect(self.__process)
-
+        self.actionAbout.triggered.connect(self.__show_about)
+        self.actionHelp.triggered.connect(self.__show_help)
         self.__center()
         self.__setAligmentTableColumns()
         self.builder = TagDictBuilderRecord()
+
+    def __show_about(self) -> None:
+        msg = QMessageBox()
+        msg.setIcon(QMessageBox.Information)
+        msg.setText("This program is needed to create ID3 tags for musical performances and catalog them.")
+        msg.setInformativeText("This program is a fork by https://github.com/tcoopman/musictagger")
+        msg.setWindowTitle("About")
+        msg.exec_()
+
+    def __show_help(self) -> None:
+        msg = QMessageBox()
+        msg.setIcon(QMessageBox.Information)
+        msg.setText(
+            "1.When choosing a scheme, directories and files with the specified tags are created according to the specified scheme with the names of folders and files\n"
+            "2.During processing, copies of files with new tags are created and old files change their tags.")
+        msg.setInformativeText(
+            "Algorithm of actions:\n1. You must select files.\n2. Specify tags without spaces.\n3. Indicate let save.\n4. Press the process button.")
+        msg.setWindowTitle("Help")
+        msg.exec_()
 
     def __disable_column(self, index_column: int) -> None:
         table = self.tableWidget
