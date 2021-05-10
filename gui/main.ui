@@ -76,7 +76,12 @@
        <widget class="QComboBox" name="comboBox">
         <item>
          <property name="text">
-          <string>%album (disc %disc)/%track - %artist - %title</string>
+          <string>Name folder:Album Name file:track - artist - title</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>Name folder:Artist album Name file:track - artist - title</string>
          </property>
         </item>
        </widget>
@@ -120,7 +125,7 @@
         </column>
         <column>
          <property name="text">
-          <string>Albumn</string>
+          <string>Album</string>
          </property>
         </column>
         <column>
@@ -130,7 +135,7 @@
         </column>
         <column>
          <property name="text">
-          <string>Track</string>
+          <string>Year</string>
          </property>
         </column>
         <column>
@@ -184,7 +189,7 @@
        </widget>
       </item>
       <item>
-       <widget class="QPushButton" name="pushButton_5">
+       <widget class="QPushButton" name="processButton">
         <property name="text">
          <string>Process</string>
         </property>
@@ -219,22 +224,9 @@
     </property>
     <addaction name="actionOpen_files"/>
     <addaction name="actionSave_files_to"/>
-    <addaction name="actionPreferences"/>
     <addaction name="actionExit"/>
    </widget>
-   <widget class="QMenu" name="menuEdit">
-    <property name="title">
-     <string>E&amp;dit</string>
-    </property>
-   </widget>
-   <widget class="QMenu" name="menuView">
-    <property name="title">
-     <string>View</string>
-    </property>
-   </widget>
    <addaction name="menuFile"/>
-   <addaction name="menuEdit"/>
-   <addaction name="menuView"/>
    <addaction name="menuHelp"/>
    <addaction name="menuAbout"/>
   </widget>

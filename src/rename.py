@@ -1,12 +1,12 @@
 from __future__ import annotations
 import glob
-import tag
+import src.tag as tag
 import re
 import shutil
 import os
-
-from tag import MyMp3
-from tag import KNOWN_TAGS
+from abc import ABC, abstractmethod, abstractproperty
+from src.tag import KNOWN_TAGS
+from src.tag import MyMp3
 from typing import List, Dict
 
 TRACK = "%track"
@@ -14,7 +14,8 @@ TITLE = "%title"
 ALBUM = "%album"
 DISC = "%disc"
 ARTIST = "%artist"
-TAGDICT = {TRACK: tag.TRACK, TITLE: tag.TITLE, ALBUM: tag.ALBUM, ARTIST: tag.ARTIST, DISC: tag.DISC}
+YEAR = "%year"
+TAGDICT = {TRACK: tag.TRACK, TITLE: tag.TITLE, ALBUM: tag.ALBUM, ARTIST: tag.ARTIST, DISC: tag.DISC, YEAR: tag.YEAR}
 
 
 class TagDict:
@@ -38,8 +39,7 @@ class TagDict:
     def __setitem__(self, key, item):
         if key not in KNOWN_TAGS:
             raise KeyError
-        else:
-            self.dict[key] = item
+        self.dict[key] = item
 
     def __contains__(self, key):
         return self.dict.__contains__(key)
@@ -63,13 +63,25 @@ class TagDict:
         self[TAGDICT[ARTIST]] = artist
 
 
-class TagDictBuilder:
+class TagDictBuilderAbstract(ABC):
+    ITEMS = []
+
+    def __init__(self):
+        pass
+
+    @abstractmethod
+    def build(record) -> TagDict:
+        pass
+
+
+class TagDictBuilderLine(TagDictBuilderAbstract):
     '''Class for buildings dictionary of tags for mp3 file'''
-    ITEMS = [TRACK, TITLE, ALBUM, ARTIST]
-    REGEX = re.compile("(" + TRACK + ")|(" + TITLE + ")|(" + ALBUM + ")|(" + ARTIST + ")|(" + DISC + ")")
+    ITEMS = [TRACK, TITLE, ALBUM, ARTIST, YEAR]
+    REGEX = re.compile("(" + TRACK + ")|(" + TITLE + ")|(" + ALBUM + ")|(" + ARTIST + ")|(" + DISC + ")|(" + YEAR + ")")
 
     def __init__(self, regex: str) -> None:
-        self.regex = self._buildRegex(regex)
+        super(TagDictBuilderLine, self).__init__()
+        self.regex = TagDictBuilderLine._buildRegex(regex)
 
     def build(self, line: str) -> TagDict:
         '''Building dictonary of tagsfor mp3'''
@@ -77,7 +89,7 @@ class TagDictBuilder:
         currentMatch = ""
         result = {}
         for match in filtered:
-            if match in TagDictBuilder.ITEMS:
+            if match in TagDictBuilderLine.ITEMS:
                 currentMatch = match
             else:
                 print(line)
@@ -98,10 +110,22 @@ class TagDictBuilder:
         result = [k for k in result if k != ""]
         return [result[0], result[-1]]
 
-    def _buildRegex(self, regex: str) -> List[str]:
+    def _buildRegex(regex: str) -> List[str]:
         '''Building regex list'''
-        splitted = TagDictBuilder.REGEX.split(regex)
+        splitted = TagDictBuilderLine.REGEX.split(regex)
         return [k for k in splitted if k != None]
+
+
+class TagDictBuilderRecord(TagDictBuilderAbstract):
+    ITEMS = [TRACK, TITLE, ARTIST, ALBUM, DISC, YEAR]
+
+    def build(self, record) -> TagDict:
+        result = {}
+        index = 0
+        for item in self.ITEMS:
+            result[TAGDICT[item]] = record[index]
+            index += 1
+        return TagDict(result)
 
 
 class TagWriter:
@@ -112,7 +136,7 @@ class TagWriter:
 
     def writeTags(self, tagDict: TagDict) -> None:
         for tag in tagDict:
-            self.file.setTag(tag, tagDict[tag])
+            self.file.set_tag(tag, tagDict[tag])
 
     def save(self) -> None:
         self.file.save()
@@ -149,10 +173,7 @@ class FileWriter:
         '''Translation schema for moving mp3 file to new folders'''
         location = self.schema
         for tag in TAGDICT:
-            print(tag)
-            print(TAGDICT[tag])
-            print(file.getTag(TAGDICT[tag]))
-            location = location.replace(tag, file.getTag(TAGDICT[tag]))
+            location = location.replace(tag, file.get_tag(TAGDICT[tag]))
         return location
 
 

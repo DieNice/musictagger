@@ -34,38 +34,38 @@ class TestMyMp3:
         assert "title2" == self.rfile2.title()
         
     def test_setArtist(self):
-        self.wfile1.setArtist(self.tag)
+        self.wfile1.set_artist(self.tag)
         assert self.tag == self.wfile1.artist()
         
-        self.wfile2.setArtist(self.tag)
+        self.wfile2.set_artist(self.tag)
         assert self.tag == self.wfile2.artist()
         
     def test_setAlbum(self):
-        self.wfile1.setAlbum(self.tag)
+        self.wfile1.set_album(self.tag)
         assert self.tag == self.wfile1.album()
         
-        self.wfile2.setAlbum(self.tag)
+        self.wfile2.set_album(self.tag)
         assert self.tag == self.wfile2.album()
         
     def test_setTrack(self):
-        self.wfile1.setTrack(self.tag)
+        self.wfile1.set_track(self.tag)
         assert self.tag == self.wfile1.track()
         
-        self.wfile2.setTrack(self.tag)
+        self.wfile2.set_track(self.tag)
         assert self.tag == self.wfile2.track()
         
     def test_setTitle(self):
-        self.wfile1.setTitle(self.tag)
+        self.wfile1.set_title(self.tag)
         assert self.tag == self.wfile1.title()
         
-        self.wfile2.setTitle(self.tag)
+        self.wfile2.set_title(self.tag)
         assert self.tag == self.wfile2.title()
         
     def test_save1(self):
-        self.wfile1.setTrack(self.tag)
-        self.wfile1.setTitle(self.tag)
-        self.wfile1.setAlbum(self.tag)
-        self.wfile1.setArtist(self.tag)
+        self.wfile1.set_track(self.tag)
+        self.wfile1.set_title(self.tag)
+        self.wfile1.set_album(self.tag)
+        self.wfile1.set_artist(self.tag)
         self.wfile1.save()
         file = MyMp3(self.wfile1path)
         assert self.tag == file.track()
@@ -73,10 +73,10 @@ class TestMyMp3:
         assert self.tag == file.album()
     
     def test_save2(self):
-        self.wfile2.setTrack(self.tag)
-        self.wfile2.setTitle(self.tag)
-        self.wfile2.setAlbum(self.tag)
-        self.wfile2.setArtist(self.tag)
+        self.wfile2.set_track(self.tag)
+        self.wfile2.set_title(self.tag)
+        self.wfile2.set_album(self.tag)
+        self.wfile2.set_artist(self.tag)
         self.wfile2.save()
         file = MyMp3(self.wfile2path)
         assert self.tag == file.track()

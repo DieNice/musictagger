@@ -1,12 +1,7 @@
-from mutagen.mp3 import MP3
-from mutagen.easyid3 import EasyID3
 from mutagen.flac import FLAC
-from mutagen.id3 import ID3, TIT2, TPE1, TALB, TRCK, TPOS
+from mutagen.id3 import ID3, TIT2, TPE1, TALB, TRCK, TPOS, TRDA
 import mutagen.id3
-
-#FIXME add year, disc, comment,..
-#FIXME add flac, oggvorbis, oggflac,...
-#FIXME add TagFileBuilder
+import mutagen
 
 ARTIST = "Artist"
 ALBUM = "Album"
@@ -17,59 +12,73 @@ DISC = "Disc"
 KNOWN_TAGS = [ARTIST, ALBUM, TITLE, TRACK, YEAR, DISC]
 
 class TagFile:
-        
+
     def tags(self):
-        return {ARTIST:[self.artist, self.setArtist], ALBUM:[self.album, self.setAlbum], TRACK:[self.track, self.setTrack], TITLE:[self.title, self.setTitle], DISC:[self.disc, self.setDisc]}
-    
-    def setTag(self, tag, value):
+        return {ARTIST: [self.artist, self.set_artist], ALBUM: [self.album, self.set_album],
+                TRACK: [self.track, self.set_track], TITLE: [self.title, self.set_title],
+                DISC: [self.disc, self.set_disc], YEAR: [self.year, self.set_year]}
+
+    def set_tag(self, tag, value):
         self.tags()[tag][1](value)
-        
-    def getTag(self, tag):
+
+    def get_tag(self, tag):
         return self.tags()[tag][0]()
-    
+
     def artist(self):
         return self._read(ARTIST)
-    
-    def setArtist(self, artist):
+
+    def set_artist(self, artist):
         self._write(ARTIST, artist)
-    
+
     def title(self):
         return self._read(TITLE)
-    
-    def setTitle(self, title):
+
+    def set_title(self, title):
         self._write(TITLE, title)
-    
+
     def album(self):
         return self._read(ALBUM)
-    
-    def setAlbum(self, album):
+
+    def set_album(self, album):
         self._write(ALBUM, album)
-    
+
     def track(self):
         return self._read(TRACK)
-    
-    def setTrack(self, track):
+
+    def set_track(self, track):
         self._write(TRACK, track)
-    
+
     def disc(self):
         return self._read(DISC)
-    
-    def setDisc(self, disc):
+
+    def set_disc(self, disc):
         self._write(DISC, disc)
-    
+
+    def year(self):
+        return self._read(YEAR)
+
+    def set_year(self, year):
+        self._write(YEAR, year)
+
     def save(self):
         self.file.save()
 
         
 class MyMp3(TagFile):
     '''Class meta mp3 file contains tags'''
-    writeDict = {ARTIST: TPE1, ALBUM: TALB, TRACK: TRCK, TITLE: TIT2, DISC: TPOS}
-    readDict = {ARTIST: "TPE1", ALBUM: "TALB", TRACK: "TRCK", TITLE: "TIT2", DISC: "TPOS"}
+    writeDict = {ARTIST: TPE1, ALBUM: TALB, TRACK: TRCK, TITLE: TIT2, DISC: TPOS, YEAR: TRDA}
+    readDict = {ARTIST: "TPE1", ALBUM: "TALB", TRACK: "TRCK", TITLE: "TIT2", DISC: "TPOS", YEAR: "TRDA"}
 
     def __init__(self, fname: str) -> None:
         self.extension = "mp3"
         self.fname = fname
-        self.file = ID3(fname)
+        try:
+            self.file = ID3(fname)
+        except mutagen.id3.ID3NoHeaderError:
+            sub_file = mutagen.File(fname)
+            sub_file.add_tags()
+            sub_file.save(fname)
+            self.file = sub_file.tags
 
     def _read(self, tag: str) -> str:
         ''':return tag from mp3 file'''
