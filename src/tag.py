@@ -2,6 +2,7 @@ from mutagen.flac import FLAC
 from mutagen.id3 import ID3, TIT2, TPE1, TALB, TRCK, TPOS, TRDA
 import mutagen.id3
 import mutagen
+from typing import Dict
 
 ARTIST = "Artist"
 ALBUM = "Album"
@@ -12,55 +13,57 @@ DISC = "Disc"
 KNOWN_TAGS = [ARTIST, ALBUM, TITLE, TRACK, YEAR, DISC]
 
 class TagFile:
+    '''Class tag of mp3 file'''
 
-    def tags(self):
+    def tags(self) -> Dict:
+        ''':return dict of tags'''
         return {ARTIST: [self.artist, self.set_artist], ALBUM: [self.album, self.set_album],
                 TRACK: [self.track, self.set_track], TITLE: [self.title, self.set_title],
                 DISC: [self.disc, self.set_disc], YEAR: [self.year, self.set_year]}
 
-    def set_tag(self, tag, value):
+    def set_tag(self, tag: str, value: str) -> None:
         self.tags()[tag][1](value)
 
-    def get_tag(self, tag):
+    def get_tag(self, tag: str) -> None:
         return self.tags()[tag][0]()
 
-    def artist(self):
+    def artist(self) -> str:
         return self._read(ARTIST)
 
-    def set_artist(self, artist):
+    def set_artist(self, artist: str) -> None:
         self._write(ARTIST, artist)
 
-    def title(self):
+    def title(self) -> str:
         return self._read(TITLE)
 
-    def set_title(self, title):
+    def set_title(self, title: str) -> str:
         self._write(TITLE, title)
 
-    def album(self):
+    def album(self) -> str:
         return self._read(ALBUM)
 
-    def set_album(self, album):
+    def set_album(self, album: str) -> None:
         self._write(ALBUM, album)
 
-    def track(self):
+    def track(self) -> str:
         return self._read(TRACK)
 
-    def set_track(self, track):
+    def set_track(self, track: str) -> None:
         self._write(TRACK, track)
 
-    def disc(self):
+    def disc(self) -> str:
         return self._read(DISC)
 
-    def set_disc(self, disc):
+    def set_disc(self, disc: str) -> None:
         self._write(DISC, disc)
 
-    def year(self):
+    def year(self) -> str:
         return self._read(YEAR)
 
-    def set_year(self, year):
+    def set_year(self, year: str) -> None:
         self._write(YEAR, year)
 
-    def save(self):
+    def save(self) -> None:
         self.file.save()
 
         
@@ -90,10 +93,3 @@ class MyMp3(TagFile):
     def _write(self, tag: str, value: str) -> None:
         '''add tag to mp3 file'''
         self.file.add(MyMp3.writeDict[tag](encoding=0, text=value))
-        
-        
-class MyFlac(TagFile):
-    def __init__(self, fname):
-        self.extension = "flac"
-        self.fname = fname
-        self.file = FLAC(fname)

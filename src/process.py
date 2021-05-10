@@ -1,11 +1,11 @@
 import glob
-
 from src.tag import MyMp3
 from src.rename import TagDictBuilderAbstract, TagDict, FileHandler, FileWriter, BatchRename
 from typing import Tuple, List
 
 
-def build_tags(tagFile: str, builder: TagDictBuilderAbstract, album: str, disc: str):
+def build_tags(tagFile: str, builder: TagDictBuilderAbstract, album: str, disc: str) -> List[TagDict]:
+    ''':return list of Tag Dict for processing'''
     lines = open(tagFile, "r").readlines()
 
     tags = []
@@ -17,7 +17,9 @@ def build_tags(tagFile: str, builder: TagDictBuilderAbstract, album: str, disc: 
     return tags
 
 
-def new_build_tags(records: List[Tuple[str, str, str, str, str, str, str]], builder: TagDictBuilderAbstract):
+def new_build_tags(records: List[Tuple[str, str, str, str, str, str, str]], builder: TagDictBuilderAbstract) -> List[
+    TagDict]:
+    ''':return list of Tag Dict for processing'''
     tags = []
     for record in records:
         result = builder.build(record)
@@ -42,15 +44,8 @@ def new_build_fiels(records: List[Tuple[str, str, str, str, str, str, str]]) -> 
     return mp3s
 
 
-def build_files_from_table() -> List[MyMp3]:
-    pass
-
-
-def getTagsTromTable() -> List[str]:
-    pass
-
-
 def process(tags: List[TagDict], mp3s: List[MyMp3], baseDir: str, schema: str) -> None:
+    '''processing batch of mp3s and tags and coping new mp3 files with new tags to folders'''
     batch = BatchRename(tags, mp3s)
     batch.tagAll()
     fh = FileHandler()

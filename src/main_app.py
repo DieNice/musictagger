@@ -1,9 +1,7 @@
-import os
-
-import PyQt5
 import sys
 from time import sleep
-from typing import Tuple, List, Dict
+from typing import Tuple, List
+import PyQt5
 from PyQt5.QtWidgets import QFileDialog, QTableWidgetItem
 from PyQt5.QtCore import QUrl, Qt
 from PyQt5 import QtGui, QtWidgets
@@ -20,6 +18,7 @@ from src.process import new_build_fiels, new_build_tags, process
 
 
 class MainApp(QtWidgets.QMainWindow, design.Ui_MainWindow):
+    '''Class of gui app'''
     FILEPATH = 6
     schems = ["%album /%track - %artist - %title", "%artist %album/%track - %artist - %title"]
 
@@ -43,6 +42,7 @@ class MainApp(QtWidgets.QMainWindow, design.Ui_MainWindow):
         self.builder = TagDictBuilderRecord()
 
     def __show_about(self) -> None:
+        '''Show about window'''
         msg = QMessageBox()
         msg.setIcon(QMessageBox.Information)
         msg.setText("This program is needed to create ID3 tags for musical performances and catalog them.")
@@ -51,6 +51,7 @@ class MainApp(QtWidgets.QMainWindow, design.Ui_MainWindow):
         msg.exec_()
 
     def __show_help(self) -> None:
+        '''Show help windows'''
         msg = QMessageBox()
         msg.setIcon(QMessageBox.Information)
         msg.setText(
@@ -62,6 +63,7 @@ class MainApp(QtWidgets.QMainWindow, design.Ui_MainWindow):
         msg.exec_()
 
     def __disable_column(self, index_column: int) -> None:
+        '''disable a path column in rows'''
         table = self.tableWidget
         row_count = table.rowCount()
         for i in range(row_count):
@@ -69,10 +71,12 @@ class MainApp(QtWidgets.QMainWindow, design.Ui_MainWindow):
             item.setFlags(Qt.ItemIsSelectable | Qt.ItemIsEnabled)
 
     def __save_file_to(self) -> None:
+        '''handler for action save file to'''
         self.__load_path_directory_to_save()
         self.__process()
 
     def __center(self) -> None:
+        '''Set main window at center'''
         frameGm = self.frameGeometry()
         screen = PyQt5.QtWidgets.QApplication.desktop().screenNumber(
             PyQt5.QtWidgets.QApplication.desktop().cursor().pos())
@@ -81,6 +85,7 @@ class MainApp(QtWidgets.QMainWindow, design.Ui_MainWindow):
         self.move(frameGm.topLeft())
 
     def __setAligmentTableColumns(self) -> None:
+        '''Resize width of column in rows by content'''
         header = self.tableWidget.horizontalHeader()
         header.setSectionResizeMode(1, QtWidgets.QHeaderView.ResizeToContents)
         header.setSectionResizeMode(1, QtWidgets.QHeaderView.ResizeToContents)
@@ -91,21 +96,26 @@ class MainApp(QtWidgets.QMainWindow, design.Ui_MainWindow):
         header.setSectionResizeMode(6, QtWidgets.QHeaderView.Stretch)
 
     def __exit_from_app(self) -> None:
+        '''Exit from app'''
         sys.exit()
 
     def __load_files_mp3(self) -> None:
+        '''Open dialog for choosing mp3 files and load them to table'''
         urls = QFileDialog.getOpenFileUrls(self, 'Open mp3 files', filter='*.mp3')
         return self.__load_urls_to_table(urls[0])
 
     def __load_file_mp3(self) -> None:
+        '''Open dialog for choosing mp3 file and load them to table'''
         urls = QFileDialog.getOpenFileUrl(self, 'Open mp3 file', filter='*.mp3')
         return self.__load_urls_to_table([urls[0]])
 
     def __load_path_directory_to_save(self) -> None:
+        '''Open dialog for choosing path for saving new mp3 files and set path to line'''
         path = QFileDialog.getExistingDirectory(None, "Choose folder for saving music", '.')
         return self.__load_path(path)
 
     def __load_path(self, path: str) -> None:
+        '''Set path BaseDir to TextEdit'''
         self.pathLine.setText(path)
 
     def __read_file(self, path: str) -> MyMp3:
@@ -126,6 +136,7 @@ class MainApp(QtWidgets.QMainWindow, design.Ui_MainWindow):
             self.label_image.setPixmap(QtGui.QPixmap(":/pictures/empty_logo.jpg"))
 
     def __load_urls_to_table(self, urls: List[QUrl]) -> None:
+        '''Load MyMp3 files to table widget'''
         table = self.tableWidget
         for item in urls:
             row = table.rowCount()
@@ -161,18 +172,21 @@ class MainApp(QtWidgets.QMainWindow, design.Ui_MainWindow):
         self.__disable_column(6)
 
     def __select_row(self) -> None:
+        '''Selecting row'''
         index = self.tableWidget.selectedIndexes()[-1].row()
         print(index)
         self.__load_picture(self.tableWidget.item(index, self.FILEPATH).text())
         self.__setDescriptionMp3(index)
 
     def __delete_selected_rows(self) -> None:
+        '''Deleting selected rows'''
         count = len([index.row() for index in self.tableWidget.selectedIndexes()])
         for _ in range(count):
             index = self.tableWidget.selectedIndexes()[0].row()
             self.tableWidget.removeRow(index)
 
     def __setDescriptionMp3(self, indexrow: int) -> None:
+        '''Show description of selected mp3 in tables to label'''
         filepath = self.tableWidget.item(indexrow, self.FILEPATH).text()
         file = MP3(filepath)
         filename = file.filename.split('/')[-1]
@@ -180,6 +194,7 @@ class MainApp(QtWidgets.QMainWindow, design.Ui_MainWindow):
         self.label_description_music.setText(desc)
 
     def __get_combobox_index(self) -> int:
+        '''Get index of current element of combobox'''
         return self.comboBox.currentIndex()
 
     def __get_row(self, index: int) -> Tuple[str, str, str, str, str, str, str]:
@@ -193,6 +208,7 @@ class MainApp(QtWidgets.QMainWindow, design.Ui_MainWindow):
         return (track, title, artist, album, disc, year, path)
 
     def __show_error_message(self, message: str, moreinfo: str) -> None:
+        '''Show message box with error'''
         msg = QMessageBox()
         msg.setIcon(QMessageBox.Warning)
         msg.setText(message)
@@ -201,9 +217,11 @@ class MainApp(QtWidgets.QMainWindow, design.Ui_MainWindow):
         msg.exec_()
 
     def __check_base_dir_path(self) -> bool:
+        '''Check of emty baseDir path'''
         return self.pathLine.text() != ''
 
     def __check_row(self, row: Tuple[str, str, str, str, str, str, str]) -> bool:
+        '''Check row by empty cols'''
         errorMessage = ""
         if row[0] == "": errorMessage += "Track is Empty;"
         if row[1] == "": errorMessage += "Title is Empty;"
@@ -218,6 +236,7 @@ class MainApp(QtWidgets.QMainWindow, design.Ui_MainWindow):
     def __unite_table_records(self, records: List[Tuple[str, str, str, str, str, str, str]], num_field: int) -> List[
         List[Tuple[
             str, str, str, str, str, str, str]]]:
+        '''Unit table record by special batches by field'''
         selected_field = set()
         result = []
         len_records = len(records)
@@ -232,6 +251,7 @@ class MainApp(QtWidgets.QMainWindow, design.Ui_MainWindow):
         return result
 
     def __process(self) -> None:
+        '''Checking incorrected actions and processing'''
         table = self.tableWidget
         row_count = table.rowCount()
         if row_count == 0:
